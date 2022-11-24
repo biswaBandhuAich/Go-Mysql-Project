@@ -14,22 +14,15 @@ import (
 func main() {
 	fmt.Println("Welcome to MYSQL - GO ")
 
-	dbCon, err := sql.Open("mysql", "root:root123456@tcp(127.0.0.1:3306)/bookzone")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer dbCon.Close()
-
 	fmt.Println("Connection Established Succesfull")
 
 	//Initialize router
 	r := mux.NewRouter()
 
 	//handler
-
-	r.HandleFunc("/", home)
+	r.HandleFunc("/", home).Methods("GET")
+	r.HandleFunc("/book/{id}", getOneBook).Methods("GET")
+	r.HandleFunc("/books", getAllBooks).Methods("GET")
 
 	//serve
 	http.ListenAndServe(":4000", r)
@@ -37,35 +30,51 @@ func main() {
 }
 
 // Fetch all books
-func getAllBooks() {
+func getAllBooks(w http.ResponseWriter, r *http.Request) {
+
+	dbCon := getDbConnection()
+	defer dbCon.Close()
+
+	dbCon.Query("select * from books")
 
 }
 
 // Fetch One Bok
-func getOneBook() {
+func getOneBook(w http.ResponseWriter, r *http.Request) {
 
 }
 
 // Adding one Book
-func addOneBook() {
+func addOneBook(w http.ResponseWriter, r *http.Request) {
 
 }
 
 // Adding many Books
-func addBooks() {
+func addBooks(w http.ResponseWriter, r *http.Request) {
 
 }
 
 // Update multiple Books
-func updateBooks() {
+func updateBooks(w http.ResponseWriter, r *http.Request) {
 
 }
 
 // update Single Book
-func updateBook() {
+func updateBook(w http.ResponseWriter, r *http.Request) {
 
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("Welcome to the Books Library!!")
+}
+
+func getDbConnection() *sql.DB {
+
+	dbCon, err := sql.Open("mysql", "root:root123456@tcp(127.0.0.1:3306)/bookzone")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return dbCon
 }
