@@ -13,7 +13,11 @@ import (
 func GetAllBooks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	bookCollection := bookService.GetAllBooks()
-	json.NewEncoder(w).Encode(&bookCollection)
+	if bookCollection == nil {
+		json.NewEncoder(w).Encode("No book found")
+	} else {
+		json.NewEncoder(w).Encode(&bookCollection)
+	}
 }
 
 // Fetch One Bok

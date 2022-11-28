@@ -3,9 +3,9 @@ package bookService
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"strconv"
 
+	"github.com/biswaBandhuAich/mysql/errorHandler"
 	"github.com/biswaBandhuAich/mysql/model"
 )
 
@@ -17,21 +17,17 @@ func GetAllBooks() *[]model.Book {
 	defer dbCon.Close()
 
 	result, err := dbCon.Query("select * from books")
-
-	if err != nil {
-		fmt.Println("Error occured while fetching all books")
-	}
-
+	errorHandler.Handle(err, "Error Occured while fetching all books")
 	for result.Next() {
 		var book model.Book
 
 		err := result.Scan(&book.ID, &book.Name, &book.Price, &book.Genre, &book.AuthorID)
+		errorHandler.Handle(err, "Error occured while parcing all books.")
+
 		fmt.Println("The book is", book)
-		if err != nil {
-			log.Fatal(err)
-		}
 		books = append(books, book)
 	}
+
 	fmt.Println("All book is", books)
 
 	return &books
@@ -44,19 +40,13 @@ func GetOneBook(bookId string) model.Book {
 
 	result, err := dbCon.Query("Select * from books where id=?", bookId)
 
-	if err != nil {
-		log.Fatal("Error occured while fetching Book")
-	}
+	errorHandler.Handle(err, "Error occured while fetching Book")
 
 	var book model.Book
 
 	if result.Next() {
-
 		err2 := result.Scan(&book.ID, &book.Name, &book.Price, &book.Genre, &book.AuthorID)
-
-		if err2 != nil {
-			log.Fatal("Error occured while parsing data")
-		}
+		errorHandler.Handle(err2, "Error parsig object at : Get One Book")
 	}
 	return book
 }
@@ -75,20 +65,19 @@ func AddOneBook(book *model.Book) {
 
 	result, err := dbCon.Exec(sql, bookId, book.Name, price, book.Genre, authorId)
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	errorHandler.Handle(err, "Failed inserting into database")
 	fmt.Println("Book added", result)
 }
 
+// Deleting single book
 func DeleteOneBook(bookId string) {
 	dbCon := getDbConnection()
 	defer dbCon.Close()
+
 	sql := "delete from books where id=?"
+
 	_, err := dbCon.Exec(sql, bookId)
-	if err != nil {
-		log.Fatal("Error occured while deleting : ", bookId)
-	}
+	errorHandler.Handle(err, "Error occured while deleting : "+bookId)
 }
 
 func DeleteAll() {
@@ -96,9 +85,7 @@ func DeleteAll() {
 	defer dbCon.Close()
 	sql := "delete from books"
 	_, err := dbCon.Exec(sql)
-	if err != nil {
-		log.Fatal("Error occured while deleting all books ")
-	}
+	errorHandler.Handle(err, "Deleting failed")
 }
 
 func UpdateBook(book *model.Book) {
@@ -107,6 +94,7 @@ func UpdateBook(book *model.Book) {
 
 	id := book.ID
 
+	// Removing the previous entry and replacing with same ID
 	DeleteOneBook(id)
 	AddOneBook(book)
 }
@@ -115,9 +103,7 @@ func getDbConnection() *sql.DB {
 
 	dbCon, err := sql.Open("mysql", "root:root123456@tcp(127.0.0.1:3306)/bookzone")
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	errorHandler.Handle(err, "Unable to establish database connection")
 
 	return dbCon
 }
