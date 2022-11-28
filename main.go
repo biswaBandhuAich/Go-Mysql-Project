@@ -12,14 +12,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Book struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Price    string `json:"price"`
-	Genre    string `json:"genre"`
-	AuthorID string `json:"-"`
-}
-
 func main() {
 	fmt.Println("Welcome to MYSQL - GO ")
 
@@ -32,7 +24,8 @@ func main() {
 	r.HandleFunc("/", home).Methods("GET")
 	r.HandleFunc("/book/{id}", getOneBook).Methods("GET")
 	r.HandleFunc("/books", getAllBooks).Methods("GET")
-	r.HandleFunc("/books", addOneBook).Methods("POST")
+	r.HandleFunc("/book", addOneBook).Methods("POST")
+	r.HandleFunc("/books", addBooks).Methods("POST")
 
 	//serve
 	http.ListenAndServe(":4000", r)
@@ -126,6 +119,16 @@ func addOneBook(w http.ResponseWriter, r *http.Request) {
 
 // Adding many Books
 func addBooks(w http.ResponseWriter, r *http.Request) {
+	//set header
+	w.Header().Set("Content-Type", "application/json")
+	booksToBeAdded := []Book{}
+	json.NewDecoder(r.Body).Decode(&booksToBeAdded)
+
+	for value := range booksToBeAdded {
+
+		//call add one book
+
+	}
 
 }
 
