@@ -2,10 +2,8 @@ package bookService
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
 	"strconv"
 
 	"github.com/biswaBandhuAich/mysql/model"
@@ -111,10 +109,6 @@ func UpdateBook(book *model.Book) {
 
 	DeleteOneBook(id)
 	AddOneBook(book)
-}
-
-func Home(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode("Welcome to the Books Library!!")
 }
 
 func getDbConnection() *sql.DB {
