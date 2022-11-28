@@ -6,6 +6,7 @@ import (
 )
 
 func Router() *mux.Router {
+
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", controller.Home).Methods("GET")
@@ -13,6 +14,8 @@ func Router() *mux.Router {
 	r.HandleFunc("/books", controller.GetAllBooks).Methods("GET")
 	r.HandleFunc("/book", controller.AddOneBook).Methods("POST")
 	r.HandleFunc("/books", controller.AddBooks).Methods("POST")
+	r.HandleFunc("/updateBook", controller.UpdateBook).Methods("POST")
+	r.HandleFunc("/updateBooks", controller.UpdateBook).Methods("POST")
 
 	return r
 }
